@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 다른 mapper와 중복되지 않도록 네임스페이스 기재 -->
+<mapper namespace="lecture">
+
+    <!-- 나의 썸네일 수정 -->
+   <update id="update_main_img">
+    update lecture
+    set 
+    main_img=#{main_img}
+    where lecture_idx=#{lecture_idx}    
+  </update>
+  
+	<!-- 강의 등록 insert -->
+	<insert id="teacher_type1_insert">
+		insert into lecture
+		(lecture_idx, 
+		cell_type, main_category, sub_category,
+		userid, subject, 
+		main_img, videofile, content, 
+		price)
+		values 
+		((select nvl(max(lecture_idx)+1,1) from lecture),
+		'1', #{main_category}, #{sub_category},
+		#{userid}, #{subject}, 
+		#{main_img, jdbcType=VARCHAR}, #{videofile, jdbcType=VARCHAR}, #{content}, 
+		#{price})
+	</insert>
+	<insert id="teacher_type2_insert">
+		insert into lecture
+		(lecture_idx,
+		 cell_type, main_category, sub_category, 
+		 userid, subject, price,
+		 main_img, videofile, content, 
+		 lecture_date, lecture_start, lecture_time
+		 )
+		values
+		(
+		 (select nvl(max(lecture_idx)+1, 1) from lecture),
+		 '2', #{main_category}, #{sub_category}, 
+		 #{userid}, #{subject}, #{price},
+		 #{main_img, jdbcType=VARCHAR}, #{videofile, jdbcType=VARCHAR}, #{content},
+		 #{lecture_date}, #{lecture_start}, #{lecture_time}
+		 )
+	</insert>
+	<insert id="teacher_type3_insert">
+		insert into lecture
+		(lecture_idx, 
+		 cell_type, main_category, sub_category, 
+		 userid, subject, price,
+		 main_img, content,  
+		 lecture_date, lecture_start, lecture_time,
+		 lecture_address, lecture_address2 )
+		values
+		(
+		 (select nvl(max(lecture_idx)+1, 1) from lecture),
+		 '3', #{main_category}, #{sub_category}, 
+		 #{userid}, #{subject}, #{price}, 
+		#{main_img, jdbcType=VARCHAR}, #{content}, 
+		 #{lecture_date}, 
+		 #{lecture_start}, #{lecture_time}, #{lecture_address},
+		 #{lecture_address2}
+		)
+	</insert>
+
+	<!-- 판매타입별 리스트 카운트-->
+	<select id="countList"
+	resultType="int">
+		select count(*) from lecture where cell_type=#{cell_type}
+	</select>
+	
+	<!-- 모든 리스트 카운트 -->
+	<select id="countList_all"
+	resultType="int">
+	select count(*) from lecture
+	</select>
+	
+	<!-- 판매타입별 리스트 -->
+	<select id="lecture_list"
+	resultType="com.TeamProject.Kdemy.model.lecture.dto.LectureDTO">
+		select * from (	
+			select rownum as rn, A.* from 
+			(
+				select * from lecture
+				where cell_type=#{cell_type}
+				order by lecture_idx desc
+			) A
+		) where rn between #{start} and #{end}
+	</select>
+	
+	<!-- 모든 리스트 -->
+	<select id="lecture_list_all"
+	resultType="com.TeamProject.Kdemy.model.lecture.dto.LectureDTO">
+		select * from (	
+			select rownum as rn, A.* from 
+			(
+				select * from lecture
+				order by lecture_idx desc
+			) A
+		) where rn between #{start} and #{end}
+	
+	</select>
+
+	<!-- 판매 타입별 검색 카운트 -->
+	<select id="searchCount"
+	resultType="int">
+		select count(*) from lecture
+		where cell_type=#{cell_type} and
+		<include refid="search" />
+	</select>
+	
+	<select id="searchCount_all"
+	resultType="int">
+		select count(*) from lecture
+	</select>
+	
+	<!-- 판매 타입별 검색 리스트 -->
+	<select id="searchList"
+	resultType="com.TeamProject.Kdemy.model.lecture.dto.LectureDTO">
+		select * from (
+			select rownum as rn, A.* from 
+			(
+				select * from lecture
+				where cell_type=#{cell_type} and
+				<include refid="search" />
+				order by lecture_idx desc
+			) A
+		) where rn between #{start} and #{end}
+	</select>
+	
+	<select id="searchList_all"
+	resultType="com.TeamProject.Kdemy.model.lecture.dto.LectureDTO">
+		select * from (
+			select rownum as rn, A.* from 
+			(
+				select * from lecture
+				where 
+				<include refid="search" />
+				order by lecture_idx desc
+			) A
+		) where rn between #{start} and #{end}
+	</select>
+	
+	<sql id="search">
+		( userid like #{keyword} or 
+		main_category like #{keyword} or
+		sub_category like #{keyword} or
+		subject like #{keyword} or
+		content like #{keyword} )
+	</sql>
+	
+	<!-- 강의 view 처리 -->	
+	<select id="lecture_list_view"
+	parameterType="int"
+	resultType="com.TeamProject.Kdemy.model.lecture.dto.LectureDTO">
+		select * from lecture
+		where lecture_idx=#{lecture_idx}
+	</select>
+	
+	<select id="myLectureList"
+	resultType="com.TeamProject.Kdemy.model.lecture.dto.LectureDTO">
+		select * from lecture
+		where userid=#{userid}
+		order by lecture_idx desc
+	</select>
+	
+	<delete id="lectureDelete">
+		delete lecture where lecture_idx=#{lecture_idx}
+	</delete>
+	
+	<select id="selectFile"
+	resultType="com.TeamProject.Kdemy.model.lecture.dto.LectureDTO">
+		select * from lecture
+		where lecture_idx=#{lecture_idx}
+	
+	</select>
+	
+	<select id="pointCheck"
+	resultType="int">
+		select point from kdemymember
+		where userid=#{userid}
+	</select>
+	
+	<select id="chartCountLecture" resultType="com.TeamProject.Kdemy.model.lecture.dto.LectureDTO">
+		select main_category, count(*) tcount from lecture group by main_category
+	</select>
+	
+	<select id="lectureView_success"
+	resultType="com.TeamProject.Kdemy.model.lecture.dto.LectureDTO">
+		select * from lecture
+		where lecture_idx=#{lecture_idx}
+	</select>
+	
+	<select id="getMain_img"
+	resultType="String">
+		select main_img from lecture
+		where lecture_idx=#{lecture_idx} 
+		order by lecture_idx desc
+	</select>
+	
+	<select id="lectureList"
+	resultType="com.TeamProject.Kdemy.model.lecture.dto.LectureDTO">
+		select * from lecture
+		where userid=#{userid} and lecture_idx=#{lecture_idx}
+	</select>
+	
+	<update id="update">
+		update lecture set 
+		main_category=#{main_category}, sub_category=#{sub_category},
+		subject=#{subject}, price=#{price}, content=#{content},
+		lecture_date=#{lecture_date}, lecture_start=#{lecture_start}, lecture_time=#{lecture_time},
+		lecture_address=#{lecture_address}, lecture_address2=#{lecture_address2}
+		where lecture_idx=#{lecture_idx}
+	</update>
+	
+	<update id="updateAddImg">
+		update lecture set 
+		main_category=#{main_category}, sub_category=#{sub_category},
+		subject=#{subject}, price=#{price}, content=#{content},
+		lecture_date=#{lecture_date}, lecture_start=#{lecture_start}, lecture_time=#{lecture_time},
+		lecture_address=#{lecture_address}, lecture_address2=#{lecture_address2},
+		main_img=#{main_img}
+		where lecture_idx=${lecture_idx}
+	</update>
+	
+</mapper>
+
