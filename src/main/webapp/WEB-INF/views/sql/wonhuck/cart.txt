@@ -1,0 +1,17 @@
+desc cart;
+
+drop table cart;
+
+create table cart(
+main_img clob,
+cart_idx number not null,
+cell_type varchar2(200),
+userid varchar2(200),
+main_category varchar2(200),
+sub_category varchar2(200),
+subject varchar2(200),
+lecture_idx number not null,
+price number
+);
+
+commit;

@@ -1,0 +1,15 @@
+--팀프로젝트 쿠폰 테이블
+drop table coupon;
+
+-- 쿠폰 목록 테이블
+create table coupon(
+coupon_idx varchar2(200),
+coupon_name varchar2(200) not null,
+coupon varchar2(200) primary key,
+point number default 0,
+coupon_text varchar2(200)
+create_date date default sysdate
+);
+
+
+select * from coupon;

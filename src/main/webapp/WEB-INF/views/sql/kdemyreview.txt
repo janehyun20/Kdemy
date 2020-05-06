@@ -1,0 +1,119 @@
+
+drop table kdemyreview cascade constraints;
+
+create table kdemyreview (
+bno number not null, 
+subject varchar2(30) not null,
+teacher varchar2(30) not null,--����
+content clob, 
+writer varchar2(50) not null,
+regdate date default sysdate, 
+viewcnt number default 0, 
+show char(1) default 'Y',
+primary key(bno)
+);
+
+delete from kdemyreview;
+
+
+
+insert into kdemyreview (bno,title,content,writer) values
+(1,'����','����','kim');
+
+select * from kdemyreview order by bno desc;
+
+COMMIT;
+
+
+--��� ���̺�
+drop table kdemyreview_reply cascade constraints;
+create table kdemyreview_reply (
+rno number not null primary key,
+bno number,
+replytext varchar2(1000) not null,
+replyer varchar2(50) not null,
+regdate date default sysdate,
+updatedate date default sysdate
+);
+drop table kdemyreview_reply;
+--foreign key �������� �߰�
+alter table kdemyreview_reply add constraint fk_review
+foreign key(bno) references kdemyreview(bno);
+
+create sequence seq_kdemyreview
+start with 1001
+increment by 1;
+drop sequence seq_kdemyreview;
+
+--������ ����
+drop sequence review_reply_seq;
+create sequence review_reply_seq
+start with 1
+increment by 1;
+
+
+
+select * from kdemymember;
+
+
+commit;
+
+
+--������ ������ �׽�Ʈ�� ���� ���ڵ� �Է�
+declare --�����
+    i number := 1;
+begin --�����
+    while i<=1000 loop
+        insert into kdemyreview (bno,subject,teacher,title,content,writer)
+        values
+        ( (select nvl(max(bno)+1,1) from kdemyreview)
+        ,'과목'||i,'강사'||i,'제목'||i, '내용'||i, 'moon');
+        i := i+1; --���� ����
+    end loop;
+end;
+/
+
+
+select * from kdemyreview order by bno desc;
+
+--���ڵ� ���� Ȯ��
+select count(*) from kdemyreview;
+
+commit;
+
+delete from kdemyreview ;
+
+
+
+--�۾��⸦ �ϱ� ����
+--������ ����
+drop sequence seq_kdemyreview;
+
+--1000������ �����ϴ� ������ ����
+create sequence seq_kdemyreview
+start with 1001
+increment by 1;
+commit;
+
+select*from kdemyreview_reply order by rno;
+
+select count(*) from kdemyreview_reply where bno=1001;
+
+
+select * from ( select rownum as rn, A.* from ( select bno, subject, teacher, title, writer, 
+regdate, viewcnt, show, (select count(*) from kdemyreview_reply where bno=b.bno) cnt from kdemyreview 
+b where show='Y' order by bno desc ) A ) where rn between 1 and 15 ;
+
+create table review_like(
+    likeno NUMBER(20) NOT NULL PRIMARY KEY, 
+    bno number(20) not null,
+    userid varchar(200) not null,
+    like_check NUMBER(20)DEFAULT 0,
+    FOREIGN KEY (userid) REFERENCES kdemymember (userid),
+    FOREIGN KEY (bno) REFERENCES kdemyreview (bno)
+);
+
+
+
+
+

@@ -1,0 +1,64 @@
+
+--!!!!!!!!�Խ���!!!!!!!!!!!--
+
+drop table kdemyboard cascade constraints;
+
+--�Խ��� ���̺�
+create table kdemynotice (
+bno number not null, --�Խù���ȣ
+title varchar2(200) not null, --����
+content clob, --����
+writer varchar2(50) not null, --�ۼ���
+regdate date default sysdate, --�ۼ�����
+viewcnt number default 0, --��ȸ��
+show char(1) default 'Y',
+primary key(bno)
+);
+
+
+
+create sequence seq_kdemynotice
+start with 1001
+increment by 1;
+drop sequence seq_kdemynotice;
+
+--������ ����
+drop sequence board_reply_seq;
+create sequence notice_reply_seq
+start with 1
+increment by 1;
+
+
+
+
+--������ ������ �׽�Ʈ�� ���� ���ڵ� �Է�
+declare --�����
+    i number := 1;
+begin --�����
+    while i<=991 loop
+        insert into kdemynotice (bno,title,content,writer)
+        values
+        ( (select nvl(max(bno)+1,1) from kdemynotice)
+        ,'제목'||i, '내용'||i, 'kim');
+        i := i+1; 
+    end loop;
+end;
+/
+
+
+
+--���ڵ� ���� Ȯ��
+select count(*) from kdemynotice;
+
+
+
+--�۾��⸦ �ϱ� ����
+--������ ����
+drop sequence seq_kdemynotice;
+
+--1000������ �����ϴ� ������ ����
+create sequence seq_kdemynotice
+start with 2000
+increment by 1;
+commit;
+

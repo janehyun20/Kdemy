@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 다른 mapper와 중복되지 않도록 네임스페이스 기재 -->
+<mapper namespace="admin">
+	<select id="passwdCheck"  resultType="com.TeamProject.Kdemy.model.admin.dto.AdminDTO">
+		select * from admin
+		where admin_id=#{userid, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="adminList"
+		resultType="com.TeamProject.Kdemy.model.admin.dto.AdminDTO">
+		select * from admin
+		order by admin_level desc
+	</select>
+
+	<insert id="insertAdmin">
+		insert into admin (admin_id, admin_passwd, admin_name, admin_email,
+		admin_hp, admin_level)
+		values(#{admin_id},#{admin_passwd},#{admin_name},#{admin_email},#{admin_hp},#{admin_level})
+	</insert>
+
+	<select id="viewAdmin"
+		resultType="com.TeamProject.Kdemy.model.admin.dto.AdminDTO">
+		select * from admin
+		where admin_id=#{admin_id}
+	</select>
+	
+	<update id="updateAdmin">
+		update admin 
+		set admin_name=#{admin_name}, admin_email=#{admin_email}, 
+		admin_hp=#{admin_hp}, admin_level=#{admin_level}
+		 where admin_id=#{admin_id}        
+	</update>
+	
+	<delete id="deleteAdmin">
+		delete from admin
+		where admin_id=#{admin_id}
+	</delete>
+	
+	<select id="resouceList" resultType="com.TeamProject.Kdemy.model.admin.dto.MainDTO">
+		select * from mainresource
+	</select>
+	
+	<update id="mainChange">
+		update mainresource
+		set color=#{color},background_img0=#{background_img0}, background_img1=#{background_img1},icon_img0=#{icon_img0},
+        icon_img1=#{icon_img1},icon_img2=#{icon_img2},icon_img3=#{icon_img3},icon_img4=#{icon_img4},icon_img5=#{icon_img5}
+ 		,icon_img6=#{icon_img6},icon_img7=#{icon_img7},icon_img8=#{icon_img8},icon_img9=#{icon_img9},icon_img10=#{icon_img10}
+		</update>
+		
+	<select id="resouceList1" resultType="string">
+		select ${value} from mainresource
+	</select>
+	
+	<select id="adminLogin" resultType="com.TeamProject.Kdemy.model.admin.dto.AdminDTO">
+	    select * from admin
+	    where admin_id=#{userid}
+	</select>
+	
+	<select id="idCheck" resultType="int">
+		select COUNT(*) from admin
+		WHERE admin_id=#{admin_id}
+	</select>
+</mapper>
