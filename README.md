@@ -67,3 +67,5 @@
       ④ 강의가 삭제되었을 때 
       ⑤ 1:1 문의 채팅을 신청 하였을 때
       상단에 알람 아이콘을 클릭하면 알람창이 뜬다.
+      
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/Li54zr6WW5Q" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
